@@ -68,7 +68,7 @@ In general test are created as public parameterless methods that have no return 
 }
 ```
 
-The current Revit application object, and active document (if any) can be accessed through the following static properties `RunUnitTestCommand.CurrentDocument' and `RunUnitTestCommand.Application'.
+The current Revit application object, and active document (if any) can be accessed through the following static properties `RunUnitTestCommand.CurrentDocument` and `RunUnitTestCommand.Application`.
 
 ##Running Tests
 
