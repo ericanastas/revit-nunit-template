@@ -72,7 +72,7 @@ The current Revit application object, and active document (if any) can be access
 
 ##Running Tests
 
-Set the unit test project as the startup project for the solution by right clicking on it in the Solution Exporer. 
+Set the unit test project as the startup project for the solution by right clicking on it in the Solution Explorer. 
 
 ![set as startup project.png](https://bitbucket.org/repo/be7b9k/images/1607490496-set%20as%20startup%20project.png)
 
@@ -80,7 +80,7 @@ Click `Start` on the tool bar to run the project. Revit will launch.
 
 If any of the tests depend on an active document, open the document to be used during the test. 
 
-From the Add-Ins tab open external tools, and click the 
+From the Add-Ins tab open external tools, and click the command for the unit tests which should be run.
 
 ![run test external tools.png](https://bitbucket.org/repo/be7b9k/images/1847103855-run%20test%20external%20tools.png)
 
