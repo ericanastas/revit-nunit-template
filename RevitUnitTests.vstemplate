@@ -12,8 +12,8 @@
 		<LocationField>true</LocationField>
 		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
 		<Icon>__TemplateIcon.ico</Icon>
-		<RequiredFrameworkVersion>v4.0</RequiredFrameworkVersion>
-		<MaxFrameworkVersion>v4.0</MaxFrameworkVersion>
+		<RequiredFrameworkVersion>v4.5</RequiredFrameworkVersion>
++		<MaxFrameworkVersion>v4.5</MaxFrameworkVersion>
 	</TemplateData>
 	<TemplateContent>
 
