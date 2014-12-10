@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Run $projectname$</Text>
+    <Description></Description>
+    <Assembly>$safeprojectname$.dll</Assembly>
+    <FullClassName>$namespace-prefix$$safeprojectname$.RunUnitTestsCommand</FullClassName>
+    <ClientId>$guid1$</ClientId>
+    <VendorId>SOM1</VendorId>
+    <VendorDescription>Skidmore Owings and Merrill, http://www.som.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>

@@ -1,0 +1,58 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>Revit Unit Tests</Name>
+		<Description>Creates a project setup to run NUnit based unit tests on a Revit Add-In</Description>
+		<ProjectType>CSharp</ProjectType>
+		<ProjectSubType>
+		</ProjectSubType>
+		<SortOrder>1000</SortOrder>
+		<CreateNewFolder>false</CreateNewFolder>
+		<DefaultName>Revit Unit Tests</DefaultName>
+		<ProvideDefaultName>false</ProvideDefaultName>
+		<LocationField>true</LocationField>
+		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+		<Icon>__TemplateIcon.ico</Icon>
+		<RequiredFrameworkVersion>v4.0</RequiredFrameworkVersion>
+		<MaxFrameworkVersion>v4.0</MaxFrameworkVersion>
+	</TemplateData>
+	<TemplateContent>
+
+		<CustomParameters>
+			<CustomParameter Name="$namespace-prefix$" Value="SOM.RevitTools."/>
+		</CustomParameters>
+
+
+
+
+		<Project ReplaceParameters="true" TargetFileName="$projectname$.csproj" File="RevitUnitTests.csproj" >
+
+			<Folder Name="Properties" TargetFolderName="Properties">
+				<ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+			</Folder>
+
+			<ProjectItem ReplaceParameters="true" TargetFileName="RunUnitTestCommand.cs">RunUnitTestsCommand.cs</ProjectItem>
+			<ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.addin">RevitUnitTests.addin</ProjectItem>
+			<ProjectItem OpenInEditor="true" ReplaceParameters="true" TargetFileName="SampleTests.cs">SampleTests.cs</ProjectItem>
+
+			<ProjectItem ReplaceParameters="false" TargetFileName="i18n.xsl">i18n.xsl</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="NUnitSummary.xsl">NUnitSummary.xsl</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="toolkit.xsl">toolkit.xsl</ProjectItem>
+
+
+
+			<Folder Name="nunit" TargetFolderName="nunit">
+				<ProjectItem ReplaceParameters="false" TargetFileName="nunit.core.dll">nunit.core.dll</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="nunit.core.interfaces.dll">nunit.core.interfaces.dll</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="nunit.framework.dll">nunit.framework.dll</ProjectItem>
+				<ProjectItem ReplaceParameters="true" TargetFileName="nunit.framework.xml">nunit.framework.xml</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="nunit.util.dll">nunit.util.dll</ProjectItem>
+			</Folder>
+
+
+
+
+
+
+		</Project>
+	</TemplateContent>
+</VSTemplate>
