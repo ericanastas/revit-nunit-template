@@ -32,6 +32,9 @@
 
 			<ProjectItem ReplaceParameters="true" TargetFileName="RunUnitTestCommand.cs">RunUnitTestsCommand.cs</ProjectItem>
 			<ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.addin">RevitUnitTests.addin</ProjectItem>
+
+
+      <ProjectItem OpenInEditor="true" ReplaceParameters="true" TargetFileName="RevitTest.cs">RevitTest.cs</ProjectItem>
 			<ProjectItem OpenInEditor="true" ReplaceParameters="true" TargetFileName="SampleTests.cs">SampleTests.cs</ProjectItem>
 
 			<ProjectItem ReplaceParameters="false" TargetFileName="i18n.xsl">i18n.xsl</ProjectItem>
