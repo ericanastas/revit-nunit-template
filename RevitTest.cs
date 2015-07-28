@@ -18,11 +18,8 @@ namespace $namespace-prefix$$safeprojectname$
     public class RevitTest
     {
         public static List<string> TEMP_DOCUMENT_PATHS = new List<string>();
-
-
         public Document TestDocument { get; private set; }
         public UIApplication Application { get; private set; }
-
 
         [TestFixtureSetUp]
         public void SetupFixture()
@@ -31,12 +28,9 @@ namespace $namespace-prefix$$safeprojectname$
             this.Application = RunUnitTestsCommand.Application;
         }
 
-
         [SetUp]
         public void SetupTest()
         {
-            
-
             if (TestContext.CurrentContext.Test.Properties.Contains("TestRevitDocument"))
             {
                 string testDocPath = (string)TestContext.CurrentContext.Test.Properties["TestRevitDocument"];
@@ -53,10 +47,6 @@ namespace $namespace-prefix$$safeprojectname$
                     TestDocument = Application.Application.OpenDocumentFile(tempPath);
                 }
             }
-
-
-            
-
         }
 
         /// <summary>
@@ -121,7 +111,6 @@ namespace $namespace-prefix$$safeprojectname$
             }
         }
 
-
         /// <summary>
         /// Determines if the opened document(s) should be closed at the end of the test
         /// </summary>
@@ -139,11 +128,6 @@ namespace $namespace-prefix$$safeprojectname$
                 else return false;
             }
         }
-
-
-    }
-
-
     }
 }
 
