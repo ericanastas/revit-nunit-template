@@ -59,13 +59,10 @@ namespace $namespace-prefix$$safeprojectname$
             if (!System.IO.File.Exists(path)) throw new System.IO.FileNotFoundException("Could not find the specified Revit document specified by the test " + TestContext.CurrentContext.Test.FullName, path);
 
             int index = 0;
-
             string ext = System.IO.Path.GetExtension(path);
             string fileNameNoExt = System.IO.Path.GetFileNameWithoutExtension(path);
             string tempDir = System.IO.Path.GetTempPath();
-
             string testName = TestContext.CurrentContext.Test.Name;
-
             string tempPath = tempPath = System.IO.Path.Combine(tempDir, fileNameNoExt + " - " + testName + ext);
 
             if (System.IO.File.Exists(tempPath))
@@ -103,11 +100,8 @@ namespace $namespace-prefix$$safeprojectname$
                     this.TestDocument.Close(false);
                     System.IO.File.Delete(tempPath);
                 }
-                else
-                {
-                    //leave doc open is true
-                    this.TestDocument = null;
-                }
+               
+                this.TestDocument = null;
             }
         }
 
@@ -130,4 +124,3 @@ namespace $namespace-prefix$$safeprojectname$
         }
     }
 }
-

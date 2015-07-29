@@ -8,37 +8,30 @@ using System.Text;
 
 namespace $namespace-prefix$$safeprojectname$
 {
-    [TestFixture]
-    [Description("Sample Tests")]
-    public class SampleTests
+    public class SampleTests : RevitTest
     {
-	
-		public Document CurrentDocument { get; set; }
-        public UIApplication Application { get; set; }
-	
-        [TestFixtureSetUp]
-        public void Setup()
+        [Test]
+        [Property("TestRevitDocument", "Test Model.rvt")]
+        [Property("LeaveRevitDocumentOpen", 0)]
+        public void TestDocumentOpened()
         {
-		    this.CurrentDocument = RunUnitTestsCommand.CurrentDocument;
-            this.Application = RunUnitTestsCommand.Application;
+            Assert.IsNotNull(this.TestDocument);
         }
 
-        [TestFixtureTearDown]
-        public void TearDown()
-        {
-			
-        }
-	
-	
         [Test]
-        [Category("Walls")]
-        [Description("Check wall type names follow standard format")]
+        public void TestDocumentNotOpened()
+        {
+            Assert.IsNull(this.TestDocument);
+        }
+
+        [Test]
+        [Property("TestRevitDocument", "Test Model.rvt")]
+        [Property("LeaveRevitDocumentOpen", 0)]
         public void CheckWallTypeNames()
         {
+            Assert.IsNotNull(this.TestDocument, "There is no active document");
 
-            Assert.IsNotNull(CurrentDocument,"There is no active document");
-
-            Autodesk.Revit.DB.FilteredElementCollector col = new Autodesk.Revit.DB.FilteredElementCollector(CurrentDocument).WhereElementIsElementType().OfClass(typeof(WallType));
+            Autodesk.Revit.DB.FilteredElementCollector col = new Autodesk.Revit.DB.FilteredElementCollector(TestDocument).WhereElementIsElementType().OfClass(typeof(WallType));
             var wallTypes = col.ToElements().Cast<WallType>();
 
             string wallTypeRegex = @"\(\w\d\)\s-\s.+?\s-\s((\dHR)|(NR))";
@@ -48,57 +41,36 @@ namespace $namespace-prefix$$safeprojectname$
             {
                 var n = t.Name;
 
-                if(!System.Text.RegularExpressions.Regex.IsMatch(t.Name,wallTypeRegex))
+                if (!System.Text.RegularExpressions.Regex.IsMatch(t.Name, wallTypeRegex))
                 {
                     failingNames.Add(n);
                 }
             }
 
-            if(failingNames.Count>0)
+            if (failingNames.Count > 0)
             {
-                Assert.Fail("One or more wall type names do not match the standard:"+String.Join(", ",failingNames.ToArray()));
+                Assert.Fail("One or more wall type names do not match the standard:" + String.Join(", ", failingNames.ToArray()));
             }
         }
 
         [Test]
-        [Category("Sample Tests")]
-        [Description("Always Pass")]
         public void PassTest()
         {
             Assert.Pass("This will always pass");
         }
 
         [Test]
-        [Category("Sample Tests")]
-        [Description("Always Fail")]
         public void FailTest()
         {
             Assert.Fail("This will always fail");
         }
 
         [Test]
-        [Category("Sample Tests")]
-        [Description("Test if a document is currently opened")]
-        public void DocumentIsOpen()
-        {
-
-            if (RunUnitTestsCommand.CurrentDocument != null)
-            {
-                Assert.Pass("A document is opened in Revit");
-            }
-            else
-            {
-                Assert.Fail("A document is not opened in Revit");
-            }
-        }
-
-        [Test]
         [ExpectedException(typeof(Exception))]
-        [Category("Sample Tests")]
-        [Description("Shows the use of the ExcpectedException attribute")]
-        public void ExceptionTest()
+        public void ExpectedExceptionTest()
         {
             throw new Exception();
         }
     }
 }
+
