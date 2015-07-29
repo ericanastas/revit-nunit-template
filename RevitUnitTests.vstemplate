@@ -36,6 +36,7 @@
 
       <ProjectItem OpenInEditor="true" ReplaceParameters="true" TargetFileName="RevitTest.cs">RevitTest.cs</ProjectItem>
 			<ProjectItem OpenInEditor="true" ReplaceParameters="true" TargetFileName="SampleTests.cs">SampleTests.cs</ProjectItem>
+			<ProjectItem OpenInEditor="false" ReplaceParameters="false" TargetFileName="Test Model.rvt">Test Model.rvt</ProjectItem>
 
 			<ProjectItem ReplaceParameters="false" TargetFileName="i18n.xsl">i18n.xsl</ProjectItem>
 			<ProjectItem ReplaceParameters="false" TargetFileName="NUnitSummary.xsl">NUnitSummary.xsl</ProjectItem>

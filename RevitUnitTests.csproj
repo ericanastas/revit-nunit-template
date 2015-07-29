@@ -98,6 +98,9 @@
     <Compile Include="SampleTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Test Model.rvt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="$safeprojectname$.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
