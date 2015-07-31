@@ -44,23 +44,50 @@ namespace $namespace-prefix$$safeprojectname$
             string assemLoc = Assembly.GetExecutingAssembly().Location;
             string execDir = System.IO.Path.GetDirectoryName(assemLoc);
 
-            //Creates the NUnit Test Suite
+            //Setup nUnit Test Suite
+
+            CoreExtensions.Host.InitializeService();
+
             TestPackage package = new TestPackage(assemLoc);
             package.Assemblies.Add(assemLoc);
-            RemoteTestRunner remoteTestRunner = new RemoteTestRunner();
-            remoteTestRunner.Load(package);
-            TestResult result = remoteTestRunner.Run(new NullListener(), TestFilter.Empty, false, LoggingThreshold.Off);
 
-            ////Runs the tests
             SimpleTestRunner runner = new SimpleTestRunner();
-            runner.Load(package);
-            var testResult = runner.Run(new NullListener(), TestFilter.Empty, false, LoggingThreshold.Off);
+            var packageLoaded = runner.Load(package);
+
+            if (!packageLoaded) 
+            {
+                message = "Could not load the tests from " + assemLoc;
+                return Result.Failed;
+            }
+                   
+            //Run the tests
+            var result = runner.Run(new NullListener(), TestFilter.Empty, false, LoggingThreshold.Off);
+
+            //Prompts User
+            Autodesk.Revit.UI.TaskDialog diag = new TaskDialog("Unit Test Results");
+
+            diag.CommonButtons = TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No;
+
+            if (!result.IsSuccess)
+            {
+                diag.MainContent = "One or more unit tests failed.\n\nDo you want to open the test results?";
+                diag.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
+                diag.DefaultButton = TaskDialogResult.Yes;
+            }
+            else
+            {
+                diag.MainContent = "All unit tests passed.\n\nDo you want to open the test results?";
+                diag.MainIcon = TaskDialogIcon.TaskDialogIconNone;
+                diag.DefaultButton = TaskDialogResult.No;
+            }
+
+            if (diag.Show() == TaskDialogResult.No) return Result.Cancelled;
 
             ///Saves the xml results file
             string xmlResultsFilePath = System.IO.Path.Combine(execDir, RESULTS_XML_FILENAME);
             if (File.Exists(xmlResultsFilePath)) File.Delete(xmlResultsFilePath);
             XmlResultWriter resultWriter = new XmlResultWriter(xmlResultsFilePath);
-            resultWriter.SaveTestResult(testResult);
+            resultWriter.SaveTestResult(result);
 
             //Transforms the XML into HTML
             System.Xml.Xsl.XslCompiledTransform transform = new System.Xml.Xsl.XslCompiledTransform();
@@ -84,16 +111,8 @@ namespace $namespace-prefix$$safeprojectname$
 
             }
 
-            //Prompts user to open results file
-            Autodesk.Revit.UI.TaskDialog diag = new TaskDialog("Unit Test Results");
-            if (result.IsFailure) diag.MainContent = "One or more unit tests failed.\n\nDo you want to open the test results?";
-            else diag.MainContent = "All unit tests passed.\n\nDo you want to open the test results?";
-            if (result.IsFailure) diag.MainIcon = TaskDialogIcon.TaskDialogIconWarning;
-            diag.CommonButtons = TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No;
-            diag.DefaultButton = TaskDialogResult.Yes;
-
-            
-            if (diag.Show() == TaskDialogResult.Yes) Process.Start(htmlFile);
+            //Opens the report
+            Process.Start(htmlFile);
 
             return Result.Succeeded;
         }
