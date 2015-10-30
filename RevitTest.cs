@@ -92,15 +92,19 @@ namespace $namespace-prefix$$safeprojectname$
         [TearDown]
         public void TearDown()
         {
-            if (TestDocument != null)
+             if (TestDocument != null)
             {
                 if (this.LeaveDocOpen == false)
                 {
-                    string tempPath = this.TestDocument.PathName;
-                    this.TestDocument.Close(false);
-                    System.IO.File.Delete(tempPath);
+                        string tempPath = this.TestDocument.PathName;
+                        this.TestDocument.Close(false);
+                        System.IO.File.Delete(tempPath);
+
+                        var ext = System.IO.Path.GetExtension(tempPath);
+                        var backupFolderPath = tempPath.Substring(0, tempPath.Length - ext.Length) + "_backup";
+                        System.IO.Directory.Delete(backupFolderPath,true);
                 }
-               
+
                 this.TestDocument = null;
             }
         }
