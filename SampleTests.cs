@@ -8,11 +8,12 @@ using System.Text;
 
 namespace $namespace-prefix$$safeprojectname$
 {
+    [TextFixture]
+    //[Property("TestRVTDoc", "Test Model.rvt")] //Alternatively the TextRVTDoc property can be specified on the fixture
     public class SampleTests : RevitTest
     {
         [Test]
-        [Property("TestRevitDocument", "Test Model.rvt")]
-        [Property("LeaveRevitDocumentOpen", 0)]
+        [Property("TestRVTDoc", "Test Model.rvt")]
         public void TestDocumentOpened()
         {
             Assert.IsNotNull(this.TestDocument);
@@ -25,8 +26,7 @@ namespace $namespace-prefix$$safeprojectname$
         }
 
         [Test]
-        [Property("TestRevitDocument", "Test Model.rvt")]
-        [Property("LeaveRevitDocumentOpen", 0)]
+        [Property("TestRVTDoc", "Test Model.rvt")]
         public void CheckWallTypeNames()
         {
             Assert.IsNotNull(this.TestDocument, "There is no active document");
@@ -51,25 +51,6 @@ namespace $namespace-prefix$$safeprojectname$
             {
                 Assert.Fail("One or more wall type names do not match the standard:" + String.Join(", ", failingNames.ToArray()));
             }
-        }
-
-        [Test]
-        public void PassTest()
-        {
-            Assert.Pass("This will always pass");
-        }
-
-        [Test]
-        public void FailTest()
-        {
-            Assert.Fail("This will always fail");
-        }
-
-        [Test]
-        [ExpectedException(typeof(Exception))]
-        public void ExpectedExceptionTest()
-        {
-            throw new Exception();
         }
     }
 }

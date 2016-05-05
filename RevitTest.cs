@@ -1,24 +1,30 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+﻿using Autodesk.Revit.UI;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace $namespace-prefix$$safeprojectname$
 {
 
-    /// <summary>
-    /// A base class for units tests that depend on a Revit document or the Revit application. Test classes can inherit from this class. The revit application can be accessed through Application property. 
-    /// Test methods can be attributed with a Property attribute which sets "TestRevitDocument" to the path of the file to open. If the results of a test need to be manualy verified, adding another property 
-    /// attribute that sets "LeaveDocOpen" to 1 will keep the test documents open in the Revit application.
+     /// <summary>
+    /// A base class for units tests that depend on a Revit document or the Revit application. Test classes can 
+    /// inherit from this class. The revit application can be accessed through the static RevitTest.Application property. 
+    /// 
+    /// The methods of a TextFixture or a TextFixture itself can be attributed with a Property attribute which sets "TestRVTDoc" 
+    /// to the path of the file to open which can be access through RevitTest.TestDocument.
+    /// 
+    /// Adding the attribute to an entire fixture will leave the same TestDocument open for all the tests of the test fixture.
+    /// On the other other hand attributing each induvidual test method will open fresh copies of the document per each test.
     /// </summary>
+    
     [TestFixture]
-    public class RevitTest
+    public abstract class RevitTest
     {
-        public static List<string> TEMP_DOCUMENT_PATHS = new List<string>();
-        public Document TestDocument { get; private set; }
+        public static string TEST_RVT_PROP = "TestRVTDoc";
+
+        /// <summary>
+        /// The current 
+        /// </summary>
+        public Autodesk.Revit.DB.Document TestDocument { get; private set; }
         public UIApplication Application { get; private set; }
 
         [TestFixtureSetUp]
@@ -26,105 +32,149 @@ namespace $namespace-prefix$$safeprojectname$
         {
             //Sets reference to Revit application
             this.Application = RunUnitTestsCommand.Application;
-        }
 
-        [SetUp]
-        public void SetupTest()
-        {
-            if (TestContext.CurrentContext.Test.Properties.Contains("TestRevitDocument"))
+            if (TestContext.CurrentContext.Test.Properties.Contains(TEST_RVT_PROP))
             {
-                string testDocPath = (string)TestContext.CurrentContext.Test.Properties["TestRevitDocument"];
+                var testRvt = (string)TestContext.CurrentContext.Test.Properties[TEST_RVT_PROP];
 
-                //Makes a temporary copy of the file to ensure that a test does not change the file
-                var tempPath = MakeTempFileCopy(testDocPath);
-
-                if (LeaveDocOpen)
-                {
-                    TestDocument = Application.OpenAndActivateDocument(tempPath).Document;
-                }
-                else
-                {
-                    TestDocument = Application.Application.OpenDocumentFile(tempPath);
-                }
+                //Always open a fresh copy with a next test fixture
+                OpenTestDocument(testRvt);
             }
         }
 
         /// <summary>
-        /// Makes a temporary copy of a file. 
+        /// Run before each test
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private string MakeTempFileCopy(string path)
+        [SetUp]
+        public void Setup()
         {
-            if (!System.IO.File.Exists(path)) throw new System.IO.FileNotFoundException("Could not find the specified Revit document specified by the test " + TestContext.CurrentContext.Test.FullName, path);
-
-            int index = 0;
-            string ext = System.IO.Path.GetExtension(path);
-            string fileNameNoExt = System.IO.Path.GetFileNameWithoutExtension(path);
-            string tempDir = System.IO.Path.GetTempPath();
-            string testName = TestContext.CurrentContext.Test.Name;
-            string tempPath = tempPath = System.IO.Path.Combine(tempDir, fileNameNoExt + " - " + testName + ext);
-
-            if (System.IO.File.Exists(tempPath))
+            //Check if current test requires a test document
+            if (TestContext.CurrentContext.Test.Properties.Contains(TEST_RVT_PROP))
             {
-                try
-                {
-                    //try to delete existing file
-                    System.IO.File.Delete(tempPath);
-                }
-                catch (Exception exp)
-                {
-                    //find unique file name
-                    while (System.IO.File.Exists(tempPath))
-                    {
-                        tempPath = System.IO.Path.Combine(tempDir, fileNameNoExt + " - " + testName + " (" + index.ToString() + ")" + ext);
-                        index++;
-                    }
-                }
+                string testRvProp = (string)TestContext.CurrentContext.Test.Properties[TEST_RVT_PROP];
+                OpenTestDocument(testRvProp);
             }
-
-            System.IO.File.Copy(path, tempPath);
-            TEMP_DOCUMENT_PATHS.Add(tempPath);
-
-            return tempPath;
         }
+
 
         [TearDown]
         public void TearDown()
         {
-             if (TestDocument != null)
+            //Don't do anything after a test
+            //No way to know if the next test will use the existing document
+        }
+
+
+        [TestFixtureTearDown]
+        public void TearDownFixture()
+        {
+            //Check if model is currently open
+            if (TestDocument != null) CloseTestDocument();
+
+
+            //Deletes the temp directory
+            string tempDir = GetTempDirectory();
+            System.IO.Directory.Delete(tempDir, true);
+        }
+
+
+
+        /// <summary>
+        /// Closes any existing temp document an opens a new one
+        /// </summary>
+        /// <param name="filePath"></param>
+        private void OpenTestDocument(string filePath)
+        {
+            if (TestDocument != null) CloseTestDocument();
+
+            //Makes a temporary copy of the file to ensure that a test does not change the file
+            var tempPath = MakeTempFileCopy(filePath);
+
+            //Opens the TestDocument
+            TestDocument = Application.Application.OpenDocumentFile(tempPath);
+        }
+
+        /// <summary>
+        /// Closes the opened test document and deletes any temporary files
+        /// </summary>
+        private void CloseTestDocument()
+        {
+            if (this.TestDocument != null)
             {
-                if (this.LeaveDocOpen == false)
-                {
-                        string tempPath = this.TestDocument.PathName;
-                        this.TestDocument.Close(false);
-                        System.IO.File.Delete(tempPath);
+                string docPath = this.TestDocument.PathName;
+                this.TestDocument.Close(false);
+                System.IO.File.Delete(docPath);
 
-                        var ext = System.IO.Path.GetExtension(tempPath);
-                        var backupFolderPath = tempPath.Substring(0, tempPath.Length - ext.Length) + "_backup";
-                        System.IO.Directory.Delete(backupFolderPath,true);
-                }
+                var ext = System.IO.Path.GetExtension(docPath);
+                var backupFolderPath = docPath.Substring(0, docPath.Length - ext.Length) + "_backup";
 
-                this.TestDocument = null;
+                if (System.IO.Directory.Exists(backupFolderPath)) System.IO.Directory.Delete(backupFolderPath, true);
             }
         }
 
         /// <summary>
-        /// Determines if the opened document(s) should be closed at the end of the test
+        /// Returns a directory to store temporary files for the current assembly
         /// </summary>
-        public bool LeaveDocOpen
+        /// <returns></returns>
+        public static string GetTempDirectory()
         {
-            get
-            {
-                if (TestContext.CurrentContext.Test.Properties.Contains("LeaveRevitDocumentOpen"))
-                {
-                    int value = (int)TestContext.CurrentContext.Test.Properties["LeaveRevitDocumentOpen"];
-
-                    if (value > 0) return true;
-                    else return false;
-                }
-                else return false;
-            }
+            var assemName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+            string assemblyName = assemName.Name;
+            string tempDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), assemblyName);
+            return tempDir;
         }
+
+
+        /// <summary>
+        /// Makes a temporary copy of a file and returns the path to the file
+        /// </summary>
+        /// <remarks></remarks>
+        /// <param name="path"></param>
+        /// <returns>The file path to the temp copy of the file</returns>
+        public static string MakeTempFileCopy(string path)
+        {
+            if (!System.IO.File.Exists(path)) throw new System.IO.FileNotFoundException("Could not find the file while running test: " + TestContext.CurrentContext.Test.Name, path);
+
+
+            //Creates the temp dir if it does not exist
+            string tempDir = GetTempDirectory();
+            if (!System.IO.Directory.Exists(tempDir)) System.IO.Directory.CreateDirectory(tempDir);
+
+            //Creates a temporary copy of the file
+            //If existing file are found they are attempted to be deleted
+            //if the existing temp files can not be deleted new files are created with incremented numbers
+            string ext = System.IO.Path.GetExtension(path);
+            string fileNameNoExt = System.IO.Path.GetFileNameWithoutExtension(path);
+            int index = 0;
+            string tempPath = null;
+
+            do
+            {
+                //Create the temp file name
+                if (index == 0) tempPath = tempPath = System.IO.Path.Combine(tempDir, fileNameNoExt + ext);
+                else System.IO.Path.Combine(tempDir, fileNameNoExt + " (" + index.ToString() + ")" + ext);
+
+                if (System.IO.File.Exists(tempPath))
+                {
+                    //Attempts to delete the existing file
+                    try
+                    {
+                        System.IO.File.Delete(tempPath);
+                    }
+                    catch (Exception exp)
+                    {
+                        index++;
+                    }
+                }
+            }
+            while (System.IO.File.Exists(tempPath));
+
+            //Coppies the file to the temporary location
+            System.IO.File.Copy(path, tempPath);
+
+            return tempPath;
+        }
+
+
     }
 }
