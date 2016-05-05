@@ -8,7 +8,7 @@ using System.Text;
 
 namespace $namespace-prefix$$safeprojectname$
 {
-    [TextFixture]
+    [TestFixture]
     //[Property("TestRVTDoc", "Test Model.rvt")] //Alternatively the TextRVTDoc property can be specified on the fixture
     public class SampleTests : RevitTest
     {
